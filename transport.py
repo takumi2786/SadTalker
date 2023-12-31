@@ -1,0 +1,36 @@
+import os
+import sys
+import torch
+
+from src.utils.preprocess import CropAndExtract
+from src.utils.init_path import init_path
+
+SIZE = 256
+PREPROCESS = 'crop'
+current_root_path = os.path.split(sys.argv[0])[0]
+checkpoint_dir = './checkpoints'
+# if torch.cuda.is_available():
+#     device = "cuda"
+# else:
+device = "cpu"
+sadtalker_paths = init_path(checkpoint_dir, os.path.join(current_root_path, 'src/config'), SIZE, False, PREPROCESS)
+
+"""
+CropAndExtract
+"""
+preprocess_model = CropAndExtract(sadtalker_paths, device)
+
+# CropAndExtract.net_recon
+target = preprocess_model.net_recon
+# 固定されている: https://github.com/OpenTalker/SadTalker/blob/ae69a4c57c9838370643dd2c9b7d1f6ba16a54d8/src/utils/preprocess.py#L145
+input_size = 224
+torch.onnx.export(
+    model=target,
+    f="imageToCoff.onnx",
+    args=(torch.randn(1, 3, input_size, input_size),),
+    export_params=True,
+    opset_version=10,
+    verbose=False,
+)
+
+# keypoint extractor
