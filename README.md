@@ -212,6 +212,14 @@ python app.py
 ```bash
 python inference.py --driven_audio <audio.wav> \
                     --source_image <video.mp4 or picture.png> \
+                    --enhancer gfpgan
+
+python inference.py --driven_audio /home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/driven_audio/bus_chinese.wav \
+                    --source_image /home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/source_image/art_0.png \
+                    --enhancer gfpgan
+
+python inference.py --driven_audio /home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/driven_audio/bus_chinese.wav \
+                    --source_image /home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/source_image/art_5.png \
                     --enhancer gfpgan 
 ```
 The results will be saved in `results/$SOME_TIMESTAMP/*.mp4`.

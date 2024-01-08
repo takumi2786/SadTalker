@@ -26,11 +26,41 @@ target = preprocess_model.net_recon
 input_size = 224
 torch.onnx.export(
     model=target,
-    f="imageToCoff.onnx",
+    f="imageToCoeff.onnx",
     args=(torch.randn(1, 3, input_size, input_size),),
     export_params=True,
     opset_version=10,
     verbose=False,
+    input_names = ["image"],
+    output_names=["coeffitients"],
 )
 
-# keypoint extractor
+# keypoint extractor: face detector
+target = preprocess_model.propress.predictor.det_net
+input_size = 256
+torch.onnx.export(
+    model=target,
+    f="faceDetector.onnx",
+    args=(torch.randn(1, 3, input_size, input_size),),
+    export_params=True,
+    opset_version=10,
+    verbose=False,
+    input_names=["image"],
+    output_names=["location", "confidence", "landmarks"],
+    dynamic_axes={ "image": {0: "batch_size", 2: "height", 3:"width"}},
+)
+
+# keypoint extractor: face aligner
+target = preprocess_model.propress.predictor.detector
+input_size = 256
+torch.onnx.export(
+    model=target,
+    f="faceAligner.onnx",
+    args=(torch.randn(1, 3, input_size, input_size),),
+    export_params=True,
+    opset_version=10,
+    verbose=False,
+    input_names=["image"],
+    # output_names=["location", "confidence", "landmarks"],
+    # dynamic_axes={ "image": {0: "height", 1:"width"}},
+)
