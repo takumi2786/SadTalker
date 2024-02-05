@@ -22,7 +22,6 @@ class Audio2Pose(nn.Module):
         
         
     def forward(self, x):
-
         batch = {}
         coeff_gt = x['gt'].cuda().squeeze(0)           #bs frame_len+1 73
         batch['pose_motion_gt'] = coeff_gt[:, 1:, -9:-3] - coeff_gt[:, :1, -9:-3] #bs frame_len 6

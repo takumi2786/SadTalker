@@ -59,7 +59,9 @@ def get_data(first_coeff_path, audio_path, device, ref_eyeblink_coeff_path, stil
     wav = audio.load_wav(audio_path, 16000) 
     wav_length, num_frames = parse_audio_length(len(wav), 16000, 25)
     wav = crop_pad_audio(wav, wav_length)
+
     orig_mel = audio.melspectrogram(wav).T
+
     spec = orig_mel.copy()         # nframes 80
     indiv_mels = []
 
@@ -93,14 +95,14 @@ def get_data(first_coeff_path, audio_path, device, ref_eyeblink_coeff_path, stil
             print(refeyeblink_coeff.shape[0])
 
         ref_coeff[:, :64] = refeyeblink_coeff[:num_frames, :64] 
-    
+
     indiv_mels = torch.FloatTensor(indiv_mels).unsqueeze(1).unsqueeze(0) # bs T 1 80 16
 
     if still:
         ratio = torch.FloatTensor(ratio).unsqueeze(0).fill_(0.)                        # bs T
     else:
         ratio = torch.FloatTensor(ratio).unsqueeze(0)
-                               # bs T
+        # bs T
     ref_coeff = torch.FloatTensor(ref_coeff).unsqueeze(0)                # bs 1 70
 
     indiv_mels = indiv_mels.to(device)

@@ -6,7 +6,7 @@ import os, sys, time
 from argparse import ArgumentParser
 
 from src.utils.preprocess import CropAndExtract
-from src.test_audio2coeff import Audio2Coeff  
+from src.test_audio2coeff import Audio2Coeff, Audio2CoeffV2
 from src.facerender.animate import AnimateFromCoeff
 from src.generate_batch import get_data
 from src.generate_facerender_batch import get_facerender_data
@@ -35,7 +35,7 @@ def main(args):
     #init model
     preprocess_model = CropAndExtract(sadtalker_paths, device)
 
-    audio_to_coeff = Audio2Coeff(sadtalker_paths,  device)
+    audio_to_coeff = Audio2CoeffV2(sadtalker_paths,  device)
     
     animate_from_coeff = AnimateFromCoeff(sadtalker_paths, device)
 

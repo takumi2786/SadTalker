@@ -153,13 +153,13 @@ class CropAndExtract():
                     coeffs = split_coeff(full_coeff)
 
                 pred_coeff = {key:coeffs[key].cpu().numpy() for key in coeffs}
- 
                 pred_coeff = np.concatenate([
                     pred_coeff['exp'], 
                     pred_coeff['angle'],
                     pred_coeff['trans'],
                     trans_params[2:][None],
                     ], 1)
+
                 video_coeffs.append(pred_coeff)
                 full_coeffs.append(full_coeff.cpu().numpy())
 

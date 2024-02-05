@@ -38,4 +38,29 @@ class Audio2Exp(nn.Module):
             }
         return results_dict
 
+class Audio2ExpV2(nn.Module):
+    def __init__(self, netG, cfg, device, prepare_training_loss=False):
+        super(Audio2ExpV2, self).__init__()
+        self.cfg = cfg
+        self.device = device
+        self.netG = netG.to(device)
 
+    def foward(self, mel_input: torch.tensor, ref, ratio):
+        bs = mel_input.shape[0]
+        T = mel_input.shape[1]
+
+        exp_coeff_pred = []
+
+        for i in tqdm(range(0, T, 10),'audio2exp:'): # every 10 frames
+            
+            current_mel_input = mel_input[:,i:i+10]
+
+            _ref = ref[:, :, :64][:, i:i+10]
+            _ratio = ratio[:, i:i+10]                               #bs T
+
+            audiox = current_mel_input.view(-1, 1, 80, 16)                  # bs*T 1 80 16
+            curr_exp_coeff_pred  = self.netG(audiox, _ref, _ratio)         # bs T 64 
+            exp_coeff_pred += [curr_exp_coeff_pred]
+
+        # BS x T x 64
+        return torch.cat(exp_coeff_pred, axis=1)
