@@ -9,9 +9,11 @@ from src.test_audio2coeff import Audio2Coeff, Audio2CoeffV2
 from src.utils.init_path import init_path
 from src.generate_batch import get_data
 
-IMAGE_PATH = "/home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/source_image/art_5.png"
-AUDIO_PATH = "/home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/driven_audio/imagine.wav"
+# IMAGE_PATH = "/home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/source_image/art_5.png"
+# AUDIO_PATH = "/home/t-ibayashi/Workspace/ax/repos/SadTalker/examples/driven_audio/imagine.wav"
 
+IMAGE_PATH = "/content/SadTalker/examples/source_image/art_5.png"
+AUDIO_PATH = "/content/SadTalker/examples/driven_audio/imagine.wav"
 
 def test_FaceDetector():
     SIZE = 256
@@ -99,13 +101,13 @@ def test_audio2coeff():
     2つのモデルの出力を変更前後で比較
     """
 
-
     model_1 = Audio2Coeff(sadtalker_paths,  device)
     out_1 = model_1.generate(batch, save_dir, pose_style, ref_pose_coeff_path)
 
     model_2 = Audio2CoeffV2(sadtalker_paths,  device)
     out_2 = model_2.generate(batch, save_dir, pose_style, ref_pose_coeff_path)
     assert out_1 == out_2
+    import pdb; pdb.set_trace()
 
 
 def test_main():
