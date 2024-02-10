@@ -45,7 +45,7 @@ class Audio2ExpV2(nn.Module):
         self.device = device
         self.netG = netG.to(device)
 
-    def foward(self, mel_input: torch.tensor, ref, ratio):
+    def forward(self, mel_input: torch.tensor, ref, ratio):
         bs = mel_input.shape[0]
         T = mel_input.shape[1]
 
@@ -54,7 +54,6 @@ class Audio2ExpV2(nn.Module):
         for i in tqdm(range(0, T, 10),'audio2exp:'): # every 10 frames
             
             current_mel_input = mel_input[:,i:i+10]
-
             _ref = ref[:, :, :64][:, i:i+10]
             _ratio = ratio[:, i:i+10]                               #bs T
 

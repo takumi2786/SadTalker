@@ -3,6 +3,7 @@ import cv2
 import os
 import sys
 import torch
+import os
 
 from src.utils.preprocess import CropAndExtract
 from src.test_audio2coeff import Audio2Coeff, Audio2CoeffV2
@@ -130,6 +131,7 @@ def test_main():
 
     preprocess_model = CropAndExtract(sadtalker_paths, device)
     audio_to_coeff = Audio2Coeff(sadtalker_paths,  device)
+    # audio_to_coeff = Audio2CoeffV2(sadtalker_paths,  device)
     first_coeff_path, crop_pic_path, crop_info = preprocess_model.generate(
         input_image_path,
         save_dir,
@@ -149,3 +151,4 @@ random.seed(314)
 # test_keypoint_extractor()
 # test_preprocess()
 test_audio2coeff()
+# test_main()

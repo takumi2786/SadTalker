@@ -125,7 +125,7 @@ class Audio2Coeff():
         return coeffs_pred_numpy
 
 
-class Audio2CoeffV2(Audio2Coeff):
+class Audio2CoeffV2(Audio2Coeff):  
     def load_Audio2Exp(self, device, sadtalker_path, cfg_exp):
         netG = SimpleWrapperV2()
         netG = netG.to(device)
@@ -146,8 +146,8 @@ class Audio2CoeffV2(Audio2Coeff):
     def generate(self, batch, coeff_save_dir, pose_style, ref_pose_coeff_path=None):
         with torch.no_grad():
             #test
-            exp_pred = self.audio2exp_model.foward(batch['indiv_mels'], batch['ref'],  batch['ratio_gt'])
-
+            exp_pred = self.audio2exp_model.forward(batch['indiv_mels'], batch['ref'],  batch['ratio_gt'])
+            # import pdb; pdb.set_trace()
             #for class_id in  range(1):
             #class_id = 0#(i+10)%45
             #class_id = random.randint(0,46)                                   #46 styles can be selected 
