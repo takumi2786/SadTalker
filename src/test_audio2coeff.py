@@ -8,7 +8,7 @@ from scipy.signal import savgol_filter
 import safetensors
 import safetensors.torch 
 
-from src.audio2pose_models.audio2pose import Audio2Pose
+from src.audio2pose_models.audio2pose import Audio2Pose, Audio2PoseV2
 from src.audio2exp_models.networks import SimpleWrapperV2 
 from src.audio2exp_models.audio2exp import Audio2Exp, Audio2ExpV2
 from src.utils.safetensor_helper import load_x_from_safetensor  
@@ -34,21 +34,9 @@ class Audio2Coeff():
         cfg_exp.freeze()
 
         # load audio2pose_model
-        self.audio2pose_model = Audio2Pose(cfg_pose, None, device=device)
-        self.audio2pose_model = self.audio2pose_model.to(device)
-        self.audio2pose_model.eval()
-        for param in self.audio2pose_model.parameters():
-            param.requires_grad = False 
-        
-        try:
-            if sadtalker_path['use_safetensor']:
-                checkpoints = safetensors.torch.load_file(sadtalker_path['checkpoint'])
-                self.audio2pose_model.load_state_dict(load_x_from_safetensor(checkpoints, 'audio2pose'))
-            else:
-                load_cpk(sadtalker_path['audio2pose_checkpoint'], model=self.audio2pose_model, device=device)
-        except:
-            raise Exception("Failed in loading audio2pose_checkpoint")
+        self.audio2pose_model = self.load_Audio2Pose(device, sadtalker_path, cfg_pose)
 
+        # load audio2exp_model
         self.audio2exp_model = self.load_Audio2Exp(device, sadtalker_path, cfg_exp)
         self.audio2exp_model = self.audio2exp_model.to(device)
         for param in self.audio2exp_model.parameters():
@@ -56,6 +44,22 @@ class Audio2Coeff():
         self.audio2exp_model.eval()
  
         self.device = device
+
+    def load_Audio2Pose(self, device, sadtalker_path, cfg_pose):
+      audio2pose_model = Audio2Pose(cfg_pose, None, device=device)
+      audio2pose_model = audio2pose_model.to(device)
+      audio2pose_model.eval()
+      for param in audio2pose_model.parameters():
+          param.requires_grad = False 
+      try:
+          if sadtalker_path['use_safetensor']:
+              checkpoints = safetensors.torch.load_file(sadtalker_path['checkpoint'])
+              audio2pose_model.load_state_dict(load_x_from_safetensor(checkpoints, 'audio2pose'))
+          else:
+              load_cpk(sadtalker_path['audio2pose_checkpoint'], model=audio2pose_model, device=device)
+      except:
+          raise Exception("Failed in loading audio2pose_checkpoint")
+      return audio2pose_model
 
     def load_Audio2Exp(self, device, sadtalker_path, cfg_exp):
         netG = SimpleWrapperV2()
@@ -103,6 +107,7 @@ class Audio2Coeff():
             if ref_pose_coeff_path is not None: 
                  coeffs_pred_numpy = self.using_refpose(coeffs_pred_numpy, ref_pose_coeff_path)
         
+            import pdb; pdb.set_trace()
             savemat(os.path.join(coeff_save_dir, '%s##%s.mat'%(batch['pic_name'], batch['audio_name'])),  
                     {'coeff_3dmm': coeffs_pred_numpy})
 
@@ -125,7 +130,23 @@ class Audio2Coeff():
         return coeffs_pred_numpy
 
 
-class Audio2CoeffV2(Audio2Coeff):  
+class Audio2CoeffV2(Audio2Coeff):
+    def load_Audio2Pose(self, device, sadtalker_path, cfg_pose):
+        audio2pose_model = Audio2PoseV2(cfg_pose, None, device=device)
+        audio2pose_model = audio2pose_model.to(device)
+        audio2pose_model.eval()
+        for param in audio2pose_model.parameters():
+            param.requires_grad = False 
+        try:
+            if sadtalker_path['use_safetensor']:
+                checkpoints = safetensors.torch.load_file(sadtalker_path['checkpoint'])
+                audio2pose_model.load_state_dict(load_x_from_safetensor(checkpoints, 'audio2pose'))
+            else:
+                load_cpk(sadtalker_path['audio2pose_checkpoint'], model=audio2pose_model, device=device)
+        except:
+            raise Exception("Failed in loading audio2pose_checkpoint")
+        return audio2pose_model
+
     def load_Audio2Exp(self, device, sadtalker_path, cfg_exp):
         netG = SimpleWrapperV2()
         netG = netG.to(device)
@@ -170,6 +191,7 @@ class Audio2CoeffV2(Audio2Coeff):
             if ref_pose_coeff_path is not None: 
                  coeffs_pred_numpy = self.using_refpose(coeffs_pred_numpy, ref_pose_coeff_path)
         
+            import pdb; pdb.set_trace()
             savemat(os.path.join(coeff_save_dir, '%s##%s.mat'%(batch['pic_name'], batch['audio_name'])),  
                     {'coeff_3dmm': coeffs_pred_numpy})
 

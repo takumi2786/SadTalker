@@ -148,40 +148,6 @@ class DECODER(nn.Module):
         batch.update({'pose_motion_pred':pose_motion_pred})
         return batch
 
-class CVAE2(nn.Module):
-    def __init__(self, cfg):
-        super().__init__()
-        encoder_layer_sizes = cfg.MODEL.CVAE.ENCODER_LAYER_SIZES
-        decoder_layer_sizes = cfg.MODEL.CVAE.DECODER_LAYER_SIZES
-        latent_size = cfg.MODEL.CVAE.LATENT_SIZE
-        num_classes = cfg.DATASET.NUM_CLASSES
-        audio_emb_in_size = cfg.MODEL.CVAE.AUDIO_EMB_IN_SIZE
-        audio_emb_out_size = cfg.MODEL.CVAE.AUDIO_EMB_OUT_SIZE
-        seq_len = cfg.MODEL.CVAE.SEQ_LEN
+class CVAEV2(CVAE):
+    pass
 
-        self.latent_size = latent_size
-
-        self.encoder = ENCODER(encoder_layer_sizes, latent_size, num_classes,
-                                audio_emb_in_size, audio_emb_out_size, seq_len)
-        self.decoder = DECODER(decoder_layer_sizes, latent_size, num_classes,
-                                audio_emb_in_size, audio_emb_out_size, seq_len)
-    def reparameterize(self, mu, logvar):
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std)
-        return mu + eps * std
-
-    def forward(self, batch):
-        batch = self.encoder(batch)
-        mu = batch['mu']
-        logvar = batch['logvar']
-        z = self.reparameterize(mu, logvar)
-        batch['z'] = z
-        return self.decoder(batch)
-
-    def test(self, batch):
-        '''
-        class_id = batch['class']
-        z = torch.randn([class_id.size(0), self.latent_size]).to(class_id.device)
-        batch['z'] = z
-        '''
-        return self.decoder(batch)

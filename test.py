@@ -102,15 +102,14 @@ def test_audio2coeff():
     2つのモデルの出力を変更前後で比較
     """
 
+    set_seed()
     model_1 = Audio2Coeff(sadtalker_paths,  device)
-    out_1 = model_1.generate(batch, save_dir, pose_style, ref_pose_coeff_path)
+    out_1 = model_1.generate(batch, os.path.join(save_dir, "1"), pose_style, ref_pose_coeff_path)
 
+    set_seed()
     model_2 = Audio2CoeffV2(sadtalker_paths,  device)
-    out_2 = model_2.generate(batch, save_dir, pose_style, ref_pose_coeff_path)
-    assert out_1 == out_2
-    import pdb; pdb.set_trace()
-
-
+    out_2 = model_2.generate(batch, os.path.join(save_dir, "2"), pose_style, ref_pose_coeff_path)
+    
 def test_main():
     input_image_path = IMAGE_PATH
     input_audio_path = AUDIO_PATH
@@ -143,9 +142,17 @@ def test_main():
     coeff_path = audio_to_coeff.generate(batch, save_dir, pose_style, ref_pose_coeff_path)
     import pdb; pdb.set_trace()
 
+def set_seed():
+    import random
+    random.seed(314)
 
-import random
-random.seed(314)
+    import torch
+    torch.manual_seed(0)
+
+    import numpy as np
+    np.random.seed(0)
+
+set_seed()
 # os.remove("/home/t-ibayashi/Workspace/ax/repos/SadTalker/test_results/art_5_landmarks.txt")
 # test_FaceDetector()
 # test_keypoint_extractor()
