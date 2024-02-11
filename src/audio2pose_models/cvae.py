@@ -23,10 +23,49 @@ class CVAE(nn.Module):
 
         self.latent_size = latent_size
 
-        self.encoder = ENCODER(encoder_layer_sizes, latent_size, num_classes,
-                                audio_emb_in_size, audio_emb_out_size, seq_len)
-        self.decoder = DECODER(decoder_layer_sizes, latent_size, num_classes,
-                                audio_emb_in_size, audio_emb_out_size, seq_len)
+        self.encoder = self.load_encoder(
+            encoder_layer_sizes, latent_size, num_classes,
+            audio_emb_in_size, audio_emb_out_size, seq_len,
+        )
+        self.decoder = self.load_decoder(
+            decoder_layer_sizes, latent_size, num_classes,
+            audio_emb_in_size, audio_emb_out_size, seq_len,
+        )
+
+    def load_encoder(
+        selrf,
+        encoder_layer_sizes,
+        latent_size,
+        num_classes,
+        audio_emb_in_size,
+        audio_emb_out_size,
+        seq_len,
+    ):
+        encoder = ENCODER(
+            encoder_layer_sizes, latent_size, num_classes,
+            audio_emb_in_size, audio_emb_out_size, seq_len,
+        )
+        return encoder
+
+    def load_decoder(
+        self,
+        decoder_layer_sizes,
+        latent_size,
+        num_classes,
+        audio_emb_in_size,
+        audio_emb_out_size,
+        seq_len,
+    ):
+        decoder = DECODER(
+            decoder_layer_sizes,
+            latent_size,
+            num_classes,
+            audio_emb_in_size,
+            audio_emb_out_size,
+            seq_len,
+        )
+        return decoder
+
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
