@@ -66,7 +66,7 @@ def test_preprocess():
     result = preprocess_model.generate(IMAGE_PATH, "test_results", "resize", source_image_flag=True, pic_size=256)
     import pdb; pdb.set_trace()
 
-def test_audio2pose():
+def test_audio2coeff_generate():
     input_image_path = IMAGE_PATH
     input_audio_path = AUDIO_PATH
     output_dir = "./test_results"
@@ -100,10 +100,11 @@ def test_audio2pose():
     model = Audio2CoeffV2(sadtalker_paths,  device)
     with torch.no_grad():
         exp_pred = model.audio2exp_model.forward(batch['indiv_mels'], batch['ref'],  batch['ratio_gt'])
-        pose_style = 0
-        batch['class'] = torch.LongTensor([pose_style]).to(model.device)
-        results_dict_pose = model.audio2pose_model.test(batch)
         import pdb; pdb.set_trace()
+        # pose_style = 0
+        # batch['class'] = torch.LongTensor([pose_style]).to(model.device)
+        # results_dict_pose = model.audio2pose_model.test(batch)
+        # import pdb; pdb.set_trace()
         pass
 
 def test_audio2coeff():
@@ -197,6 +198,6 @@ set_seed()
 # test_FaceDetector()
 # test_keypoint_extractor()
 # test_preprocess()
-test_audio2pose()
+test_audio2coeff_generate()
 # test_audio2coeff()
 # test_main()
