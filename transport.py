@@ -101,18 +101,23 @@ if True:
         output_names=["audio_emb"],
     )
 
-    # # Audio2Coeff.audio2Pose.netG
-    # target = audio_to_coeff.audio2pose_model.netG
-    # torch.onnx.export(
-    #     model=target,
-    #     f="audio2Pose_netG.onnx",
-    #     # args=(torch.randn(1, 32, 1, 80, 16)),
-    #     # export_params=True,
-    #     # opset_version=10,
-    #     # verbose=False,
-    #     # input_names=["melspectrograms"],
-    #     # output_names=["audio_emb"],
-    # )
+    # Audio2Coeff.audio2Pose.netG
+    target = audio_to_coeff.audio2pose_model.netG
+    torch.onnx.export(
+        model=target,
+        f="audio2Pose_netG.onnx",
+        args=(
+            torch.randn(1, 64),
+            torch.randn(1),
+            torch.randn(1, 6),
+            torch.randn(1, 32, 512),
+        ),
+        export_params=True,
+        opset_version=10,
+        verbose=False,
+        input_names=["z", "class", "ref", "audio_emb"],
+        output_names=["pose_motion_pred"],
+    )
 
     
 
