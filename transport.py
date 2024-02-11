@@ -83,7 +83,7 @@ if True:
         export_params=True,
         opset_version=10,
         verbose=False,
-        input_names=["indiv_mels", "ref", "ratio_gt"],
+        input_names=["mel_input", "ref", "ratio"],
         output_names=["exp"],
     )
 
