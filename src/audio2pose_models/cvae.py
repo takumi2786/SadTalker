@@ -188,5 +188,108 @@ class DECODER(nn.Module):
         return batch
 
 class CVAEV2(CVAE):
-    pass
+    def load_encoder(
+        selrf,
+        encoder_layer_sizes,
+        latent_size,
+        num_classes,
+        audio_emb_in_size,
+        audio_emb_out_size,
+        seq_len,
+    ):
+        encoder = ENCODERV2(
+            encoder_layer_sizes, latent_size, num_classes,
+            audio_emb_in_size, audio_emb_out_size, seq_len,
+        )
+        return encoder
+
+    def load_decoder(
+        self,
+        decoder_layer_sizes,
+        latent_size,
+        num_classes,
+        audio_emb_in_size,
+        audio_emb_out_size,
+        seq_len,
+    ):
+        decoder = DECODERV2(
+            decoder_layer_sizes,
+            latent_size,
+            num_classes,
+            audio_emb_in_size,
+            audio_emb_out_size,
+            seq_len,
+        )
+        return decoder
+
+    def forward(
+        self,
+        z,
+        _class,
+        ref,
+        audio_in,
+    ):
+        # decoderのみ利用する
+        return self.decoder(
+            z,
+            _class,
+            ref,
+            audio_in,
+        )
+
+class ENCODERV2(ENCODER):
+    def forward(
+        self,
+        _class,
+        pose_motion_gt,
+        ref,
+        audio_in,
+    ):
+        class_id = _class
+        bs = pose_motion_gt.shape[0]
+
+        # pose encode
+        pose_emb = self.resunet(pose_motion_gt.unsqueeze(1))          #bs 1 seq_len 6 
+        pose_emb = pose_emb.reshape(bs, -1)                    #bs seq_len*6
+
+        # audio mapping
+        audio_out = self.linear_audio(audio_in)                # bs seq_len audio_emb_out_size
+        audio_out = audio_out.reshape(bs, -1)
+
+        class_bias = self.classbias[class_id]                  #bs latent_size
+        x_in = torch.cat([ref, pose_emb, audio_out, class_bias], dim=-1) #bs seq_len*(audio_emb_out_size+6)+latent_size
+        x_out = self.MLP(x_in)
+
+        mu = self.linear_means(x_out)
+        logvar = self.linear_means(x_out)                      #bs latent_size 
+
+        return mu, logvar
+
+
+class DECODERV2(DECODER):
+    def forward(
+        self,
+        z,
+        _class,
+        ref,
+        audio_in,
+    ):
+        bs = z.shape[0]
+        class_id = _class
+        audio_out = self.linear_audio(audio_in)                 # bs seq_len audio_emb_out_size
+        audio_out = audio_out.reshape([bs, -1])                 # bs seq_len*audio_emb_out_size
+        class_bias = self.classbias[class_id]                   #bs latent_size
+
+        z = z + class_bias
+        x_in = torch.cat([ref, z, audio_out], dim=-1)
+        x_out = self.MLP(x_in)                                  # bs layer_sizes[-1]
+        x_out = x_out.reshape((bs, self.seq_len, -1))
+
+        #print('x_out: ', x_out)
+
+        pose_emb = self.resunet(x_out.unsqueeze(1))             #bs 1 seq_len 6
+
+        pose_motion_pred = self.pose_linear(pose_emb.squeeze(1))       #bs seq_len 6
+
+        return pose_motion_pred
 

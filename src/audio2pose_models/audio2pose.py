@@ -65,7 +65,6 @@ class Audio2Pose(nn.Module):
         audio_emb_list = []
         pose_motion_pred_list = [torch.zeros(batch['ref'].unsqueeze(1).shape, dtype=batch['ref'].dtype, 
                                                 device=batch['ref'].device)]
-        import pdb; pdb.set_trace()
         for i in range(div):
             z = torch.randn(bs, self.latent_dim).to(ref.device)
             batch['z'] = z
@@ -84,7 +83,7 @@ class Audio2Pose(nn.Module):
                 audio_emb = torch.cat([pad_audio_emb, audio_emb], 1) 
             batch['audio_emb'] = audio_emb
             batch = self.netG.test(batch)
-            pose_motion_pred_list.append(batch['pose_motion_pred'][:,-1*re:,:])   
+            pose_motion_pred_list.append(batch['pose_motion_pred'][:,-1*re:,:])
         
         pose_motion_pred = torch.cat(pose_motion_pred_list, dim = 1)
         batch['pose_motion_pred'] = pose_motion_pred
@@ -123,9 +122,14 @@ class Audio2PoseV2(Audio2Pose):
             batch['z'] = z
             audio_emb = self.audio_encoder(indiv_mels_use[:, i*self.seq_len:(i+1)*self.seq_len,:,:,:]) #bs seq_len 512
             batch['audio_emb'] = audio_emb
-            batch = self.netG.test(batch)
+            batch['pose_motion_pred'] = self.netG.forward(
+                batch['z'],
+                batch['class'],
+                batch['ref'],
+                batch['audio_emb'],
+            )
             pose_motion_pred_list.append(batch['pose_motion_pred'])  #list of bs seq_len 6
-        
+
         if re != 0:
             z = torch.randn(bs, self.latent_dim).to(ref.device)
             batch['z'] = z
@@ -135,9 +139,14 @@ class Audio2PoseV2(Audio2Pose):
                 pad_audio_emb = audio_emb[:, :1].repeat(1, pad_dim, 1) 
                 audio_emb = torch.cat([pad_audio_emb, audio_emb], 1) 
             batch['audio_emb'] = audio_emb
-            batch = self.netG.test(batch)
+            batch['pose_motion_pred'] = self.netG.forward(
+                batch['z'],
+                batch['class'],
+                batch['ref'],
+                batch['audio_emb'],
+            )
             pose_motion_pred_list.append(batch['pose_motion_pred'][:,-1*re:,:])   
-        
+
         pose_motion_pred = torch.cat(pose_motion_pred_list, dim = 1)
         batch['pose_motion_pred'] = pose_motion_pred
 

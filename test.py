@@ -143,9 +143,9 @@ def test_audio2coeff():
     2つのモデルの出力を変更前後で比較
     """
 
-    # set_seed()
-    # model_1 = Audio2Coeff(sadtalker_paths,  device)
-    # out_1 = model_1.generate(batch, os.path.join(save_dir, "1"), pose_style, ref_pose_coeff_path)
+    set_seed()
+    model_1 = Audio2Coeff(sadtalker_paths,  device)
+    out_1 = model_1.generate(batch, os.path.join(save_dir, "1"), pose_style, ref_pose_coeff_path)
 
     set_seed()
     model_2 = Audio2CoeffV2(sadtalker_paths,  device)
@@ -198,6 +198,6 @@ set_seed()
 # test_FaceDetector()
 # test_keypoint_extractor()
 # test_preprocess()
-test_audio2coeff_generate()
-# test_audio2coeff()
+# test_audio2coeff_generate()
+test_audio2coeff()
 # test_main()

@@ -89,7 +89,7 @@ class Audio2Coeff():
             #class_id = 0#(i+10)%45
             #class_id = random.randint(0,46)                                   #46 styles can be selected 
             batch['class'] = torch.LongTensor([pose_style]).to(self.device)
-            results_dict_pose = self.audio2pose_model.test(batch) 
+            results_dict_pose = self.audio2pose_model.test(batch)
             pose_pred = results_dict_pose['pose_pred']                        #bs T 6
 
             pose_len = pose_pred.shape[1]
@@ -107,7 +107,6 @@ class Audio2Coeff():
             if ref_pose_coeff_path is not None: 
                  coeffs_pred_numpy = self.using_refpose(coeffs_pred_numpy, ref_pose_coeff_path)
         
-            import pdb; pdb.set_trace()
             savemat(os.path.join(coeff_save_dir, '%s##%s.mat'%(batch['pic_name'], batch['audio_name'])),  
                     {'coeff_3dmm': coeffs_pred_numpy})
 
@@ -173,7 +172,7 @@ class Audio2CoeffV2(Audio2Coeff):
             #class_id = 0#(i+10)%45
             #class_id = random.randint(0,46)                                   #46 styles can be selected 
             batch['class'] = torch.LongTensor([pose_style]).to(self.device)
-            results_dict_pose = self.audio2pose_model.test(batch) 
+            results_dict_pose = self.audio2pose_model.test(batch)
             pose_pred = results_dict_pose['pose_pred']                        #bs T 6
 
             pose_len = pose_pred.shape[1]
