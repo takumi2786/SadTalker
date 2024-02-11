@@ -72,34 +72,7 @@ if True:
     """
     Audio2Coeff
     """
-    print("Audio2Coeff.audio2pose_model.audio_encoder")
     audio_to_coeff = Audio2CoeffV2(sadtalker_paths, device)
-
-    # Audio2Coeff.audio2Pose.audioEncoder
-    target = audio_to_coeff.audio2pose_model.audio_encoder
-    torch.onnx.export(
-        model=target,
-        f="audio2Pose_audioEncoder.onnx",
-        args=(torch.randn(1, 32, 1, 80, 16)),
-        export_params=True,
-        opset_version=10,
-        verbose=False,
-        input_names=["melspectrograms"],
-        output_names=["audio_emb"],
-    )
-
-    # Audio2Coeff.audio2Pose.netG
-    target = audio_to_coeff.audio2pose_model.netG
-    torch.onnx.export(
-        model=target,
-        f="audio2Pose_netG.onnx",
-        # args=(torch.randn(1, 32, 1, 80, 16)),
-        # export_params=True,
-        # opset_version=10,
-        # verbose=False,
-        # input_names=["melspectrograms"],
-        # output_names=["audio_emb"],
-    )
 
     print("Audio2Coeff.audio2exp_model")
     target = audio_to_coeff.audio2exp_model
@@ -113,6 +86,35 @@ if True:
         input_names=["indiv_mels", "ref", "ratio_gt"],
         output_names=["exp"],
     )
+
+    # Audio2Coeff.audio2Pose.audioEncoder
+    print("Audio2Coeff.audio2pose_model.audio_encoder")
+    target = audio_to_coeff.audio2pose_model.audio_encoder
+    torch.onnx.export(
+        model=target,
+        f="audio2Pose_audioEncoder.onnx",
+        args=(torch.randn(1, 32, 1, 80, 16)),
+        export_params=True,
+        opset_version=10,
+        verbose=False,
+        input_names=["melspectrograms"],
+        output_names=["audio_emb"],
+    )
+
+    # # Audio2Coeff.audio2Pose.netG
+    # target = audio_to_coeff.audio2pose_model.netG
+    # torch.onnx.export(
+    #     model=target,
+    #     f="audio2Pose_netG.onnx",
+    #     # args=(torch.randn(1, 32, 1, 80, 16)),
+    #     # export_params=True,
+    #     # opset_version=10,
+    #     # verbose=False,
+    #     # input_names=["melspectrograms"],
+    #     # output_names=["audio_emb"],
+    # )
+
+    
 
 print("success")
 

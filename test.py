@@ -99,9 +99,8 @@ def test_audio2pose():
     set_seed()
     model = Audio2CoeffV2(sadtalker_paths,  device)
     with torch.no_grad():
-        results_dict_exp= model.audio2exp_model.test(batch)
+        exp_pred = model.audio2exp_model.forward(batch['indiv_mels'], batch['ref'],  batch['ratio_gt'])
         pose_style = 0
-        exp_pred = results_dict_exp['exp_coeff_pred']
         batch['class'] = torch.LongTensor([pose_style]).to(model.device)
         results_dict_pose = model.audio2pose_model.test(batch)
         import pdb; pdb.set_trace()
@@ -198,5 +197,6 @@ set_seed()
 # test_FaceDetector()
 # test_keypoint_extractor()
 # test_preprocess()
-test_audio2coeff()
+test_audio2pose()
+# test_audio2coeff()
 # test_main()
