@@ -278,6 +278,7 @@ class DECODERV2(DECODER):
         class_id = _class
         audio_out = self.linear_audio(audio_in)                 # bs seq_len audio_emb_out_size
         audio_out = audio_out.reshape([bs, -1])                 # bs seq_len*audio_emb_out_size
+        import pdb; pdb.set_trace()
         class_bias = self.classbias[class_id]                   #bs latent_size
 
         z = z + class_bias

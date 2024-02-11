@@ -108,7 +108,7 @@ if True:
         f="audio2Pose_netG.onnx",
         args=(
             torch.randn(1, 64),
-            torch.randn(1),
+            torch.LongTensor([0]),
             torch.randn(1, 6),
             torch.randn(1, 32, 512),
         ),
@@ -118,8 +118,6 @@ if True:
         input_names=["z", "class", "ref", "audio_emb"],
         output_names=["pose_motion_pred"],
     )
-
-    
 
 print("success")
 

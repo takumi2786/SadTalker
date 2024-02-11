@@ -145,6 +145,7 @@ class Audio2PoseV2(Audio2Pose):
                 batch['ref'],
                 batch['audio_emb'],
             )
+            import pdb; pdb.set_trace()
             pose_motion_pred_list.append(batch['pose_motion_pred'][:,-1*re:,:])
 
         pose_motion_pred = torch.cat(pose_motion_pred_list, dim = 1)
