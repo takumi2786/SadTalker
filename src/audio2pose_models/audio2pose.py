@@ -65,7 +65,7 @@ class Audio2Pose(nn.Module):
         audio_emb_list = []
         pose_motion_pred_list = [torch.zeros(batch['ref'].unsqueeze(1).shape, dtype=batch['ref'].dtype, 
                                                 device=batch['ref'].device)]
-
+        import pdb; pdb.set_trace()
         for i in range(div):
             z = torch.randn(bs, self.latent_dim).to(ref.device)
             batch['z'] = z

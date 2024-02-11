@@ -66,6 +66,47 @@ def test_preprocess():
     result = preprocess_model.generate(IMAGE_PATH, "test_results", "resize", source_image_flag=True, pic_size=256)
     import pdb; pdb.set_trace()
 
+def test_audio2pose():
+    input_image_path = IMAGE_PATH
+    input_audio_path = AUDIO_PATH
+    output_dir = "./test_results"
+    ref_eyeblink = None
+    ref_pose = None
+    current_root_path = os.path.split(sys.argv[0])[0]
+    checkpoint_dir = './checkpoints'
+    SIZE = 256
+    PREPROCESS = 'crop'
+    device = 'cpu'
+    still = False
+    ref_eyeblink_coeff_path = None
+    save_dir = "test_results"
+    pose_style = 0
+    ref_pose_coeff_path = None
+    sadtalker_paths = init_path(checkpoint_dir, os.path.join(current_root_path, 'src/config'), SIZE, False, PREPROCESS)
+
+    preprocess_model = CropAndExtract(sadtalker_paths, device)
+    first_coeff_path, crop_pic_path, crop_info = preprocess_model.generate(
+        input_image_path,
+        save_dir,
+        "resize",
+        source_image_flag=True,
+        pic_size=SIZE,
+    )
+
+    batch = get_data(first_coeff_path, input_audio_path, device, ref_eyeblink_coeff_path, still=still)
+    coeff_save_dir = os.path.join(save_dir, "0"),
+
+    set_seed()
+    model = Audio2CoeffV2(sadtalker_paths,  device)
+    with torch.no_grad():
+        results_dict_exp= model.audio2exp_model.test(batch)
+        pose_style = 0
+        exp_pred = results_dict_exp['exp_coeff_pred']
+        batch['class'] = torch.LongTensor([pose_style]).to(model.device)
+        results_dict_pose = model.audio2pose_model.test(batch)
+        import pdb; pdb.set_trace()
+        pass
+
 def test_audio2coeff():
     input_image_path = IMAGE_PATH
     input_audio_path = AUDIO_PATH
@@ -102,9 +143,9 @@ def test_audio2coeff():
     2つのモデルの出力を変更前後で比較
     """
 
-    set_seed()
-    model_1 = Audio2Coeff(sadtalker_paths,  device)
-    out_1 = model_1.generate(batch, os.path.join(save_dir, "1"), pose_style, ref_pose_coeff_path)
+    # set_seed()
+    # model_1 = Audio2Coeff(sadtalker_paths,  device)
+    # out_1 = model_1.generate(batch, os.path.join(save_dir, "1"), pose_style, ref_pose_coeff_path)
 
     set_seed()
     model_2 = Audio2CoeffV2(sadtalker_paths,  device)
