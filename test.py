@@ -135,10 +135,6 @@ def test_audio2coeff():
     )
     batch = get_data(first_coeff_path, input_audio_path, device, ref_eyeblink_coeff_path, still=still)
 
-    # Audio2Exp.audio2exp_model.netGの出力を変更前後で比較
-    # model = Audio2Coeff(sadtalker_paths,  device)
-    # submodel = model.audio2exp_model.netG
-
     """
     2つのモデルの出力を変更前後で比較
     """
@@ -170,8 +166,8 @@ def test_main():
     sadtalker_paths = init_path(checkpoint_dir, os.path.join(current_root_path, 'src/config'), SIZE, False, PREPROCESS)
 
     preprocess_model = CropAndExtract(sadtalker_paths, device)
-    audio_to_coeff = Audio2Coeff(sadtalker_paths,  device)
-    # audio_to_coeff = Audio2CoeffV2(sadtalker_paths,  device)
+    # audio_to_coeff = Audio2Coeff(sadtalker_paths,  device)
+    audio_to_coeff = Audio2CoeffV2(sadtalker_paths,  device)
     first_coeff_path, crop_pic_path, crop_info = preprocess_model.generate(
         input_image_path,
         save_dir,
@@ -199,5 +195,5 @@ set_seed()
 # test_keypoint_extractor()
 # test_preprocess()
 # test_audio2coeff_generate()
-test_audio2coeff()
-# test_main()
+# test_audio2coeff()
+test_main()

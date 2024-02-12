@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+import numpy as np
 from src.audio2pose_models.cvae import CVAE, CVAEV2
 from src.audio2pose_models.discriminator import PoseSequenceDiscriminator
 from src.audio2pose_models.audio_encoder import AudioEncoder
@@ -118,7 +119,8 @@ class Audio2PoseV2(Audio2Pose):
                                                 device=batch['ref'].device)]
 
         for i in range(div):
-            z = torch.randn(bs, self.latent_dim).to(ref.device)
+            # z = torch.randn(bs, self.latent_dim).to(ref.device)
+            z = torch.Tensor(np.random.randn(bs, self.latent_dim)).to(ref.device)
             batch['z'] = z
             audio_emb = self.audio_encoder(indiv_mels_use[:, i*self.seq_len:(i+1)*self.seq_len,:,:,:]) #bs seq_len 512
             batch['audio_emb'] = audio_emb
@@ -128,10 +130,12 @@ class Audio2PoseV2(Audio2Pose):
                 batch['ref'],
                 batch['audio_emb'],
             )
+            import pdb; pdb.set_trace()
             pose_motion_pred_list.append(batch['pose_motion_pred'])  #list of bs seq_len 6
 
         if re != 0:
-            z = torch.randn(bs, self.latent_dim).to(ref.device)
+            # z = torch.randn(bs, self.latent_dim).to(ref.device)
+            z = torch.Tensor(np.random.randn(bs, self.latent_dim)).to(ref.device)
             batch['z'] = z
             audio_emb = self.audio_encoder(indiv_mels_use[:, -1*self.seq_len:,:,:,:]) #bs seq_len  512
             if audio_emb.shape[1] != self.seq_len:
@@ -145,7 +149,6 @@ class Audio2PoseV2(Audio2Pose):
                 batch['ref'],
                 batch['audio_emb'],
             )
-            import pdb; pdb.set_trace()
             pose_motion_pred_list.append(batch['pose_motion_pred'][:,-1*re:,:])
 
         pose_motion_pred = torch.cat(pose_motion_pred_list, dim = 1)
