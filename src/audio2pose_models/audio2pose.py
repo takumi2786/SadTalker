@@ -130,7 +130,6 @@ class Audio2PoseV2(Audio2Pose):
                 batch['ref'],
                 batch['audio_emb'],
             )
-            import pdb; pdb.set_trace()
             pose_motion_pred_list.append(batch['pose_motion_pred'])  #list of bs seq_len 6
 
         if re != 0:
@@ -138,10 +137,11 @@ class Audio2PoseV2(Audio2Pose):
             z = torch.Tensor(np.random.randn(bs, self.latent_dim)).to(ref.device)
             batch['z'] = z
             audio_emb = self.audio_encoder(indiv_mels_use[:, -1*self.seq_len:,:,:,:]) #bs seq_len  512
+            import pdb; pdb.set_trace()
             if audio_emb.shape[1] != self.seq_len:
                 pad_dim = self.seq_len-audio_emb.shape[1]
-                pad_audio_emb = audio_emb[:, :1].repeat(1, pad_dim, 1) 
-                audio_emb = torch.cat([pad_audio_emb, audio_emb], 1) 
+                pad_audio_emb = audio_emb[:, :1].repeat(1, pad_dim, 1)
+                audio_emb = torch.cat([pad_audio_emb, audio_emb], 1)
             batch['audio_emb'] = audio_emb
             batch['pose_motion_pred'] = self.netG.forward(
                 batch['z'],
